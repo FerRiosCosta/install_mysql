@@ -1,0 +1,13 @@
+---
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Iniciando y activando mysql
+  ansible.builtin.service: 
+      name: mariadb
+      state: started 
+      enabled: true
+  
+- include_tasks: secure-installation.yml
+- include_tasks: databases.yml
+- include_tasks: users.yml

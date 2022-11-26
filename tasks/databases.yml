@@ -1,0 +1,6 @@
+---
+- name: Creacion de Base de datos
+  community.mysql.mysql_db:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ mysql_databases }}"

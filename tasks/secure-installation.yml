@@ -1,0 +1,31 @@
+---
+- name: Copiando el archivo root-my.cnf  con las credenciales de root
+  ansible.builtin.template:
+    src: "root-my.cnf.j2"
+    dest: "{{ mysql_root_home }}/.my.cnf"
+    owner: "{{ mysql_root_user }}"
+    mode: 0600
+
+- name: Deshabilitar el login remoto de root.
+  ansible.builtin.command: 'mysql -NBe "{{ item }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User='{{ mysql_root_user }}' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
+  changed_when: false
+
+- name: Obtener la lista de hosts para los usuarios anonimos
+  ansible.builtin.command: mysql -NBe "SELECT Host FROM mysql.user WHERE User = ''"
+  register: mysql_anonymous_hosts
+  changed_when: false
+  check_mode: false
+
+- name: Eliminar los usuarios anonimos
+  community.mysql.mysql_user:
+    name: ""
+    host: "{{ item }}"
+    state: absent
+  with_items: "{{ mysql_anonymous_hosts.stdout_lines|default([]) }}"
+
+- name: Eliminar MySQL test database.
+  community.mysql.mysql_db: 
+    name: 'test' 
+    state: absent

@@ -1,0 +1,8 @@
+---
+mysql_databases:
+  - name: app
+mysql_packages:
+  - mariadb
+  - mariadb-server
+  - python3-PyMySQL
+ 

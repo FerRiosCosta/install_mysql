@@ -1,0 +1,5 @@
+---
+- name: Instalando mysql para versiones basadas en RedHat
+  yum:
+    name: "{{ mysql_packages }}"
+    state: present
